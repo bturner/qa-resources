@@ -69,21 +69,27 @@
         
         #content {
             background: #CCC;
-            display: table;
+            /* display: table; */
 /*            overflow: auto;*/
 /*            min-width:1000px;*/
 /*            max-width:100%;*/
 /*            width: 100%;*/
             padding-left: 440px;
-            position: absolute;
             top: 100px;
 /*            opacity: 0.5;*/
-            padding-bottom: 50px;
+            /* padding-bottom: 50px; */
+			box-sizing: border-box;
+			width: 100%;
+			margin-bottom: -27px;
+			overflow-y: hidden;
         }
+		#source {
+			overflow: auto;
+		}
         
         #footer {
             background: #00F;
-            position: fixed;
+            /*position: fixed;*/
             bottom: 0;
             text-align: center;
             z-index: 5;
@@ -110,11 +116,95 @@
             box-sizing: border-box;
             
         }
-        
+        .scroller {
+			overflow-x: auto;
+			position: fixed;
+			bottom: 0;
+			width : 100%;
+			height : 17px;
+			z-index : 100;
+		}
         </style>
-        
+		<!--[if IE lt 9]>
+		<style>
+		.scroller {
+			overflow-x: scroll;
+		}
+		</style>
+		<![endif]-->
+        <script>
+			function onload() {
+			
+				var source = document.getElementById('source');
+			
+				var scroller = document.createElement('div'),
+					scrollee = document.createElement('div');
+					scroller.appendChild(scrollee);
+					
+				scroller.className = 'scroller';
+				
+				scrollee.style.width = source.scrollWidth + 'px';
+				scrollee.style.height = '1px';
+				
+				document.body.appendChild(scroller);
+				
+				var contentWidth = source.scrollWidth,
+					sourceWidth, scrollerWidth, ratio;
+				
+				var userActivated = true;
+				scroller.onscroll = function() {
+					if (userActivated) {
+						userActivated = false;
+						source.scrollLeft = scroller.scrollLeft * ratio;
+					} else {
+						userActivated = true;
+					}
+				};
+				source.onscroll = function() {
+					if (userActivated) {
+						userActivated = false;
+						scroller.scrollLeft = source.scrollLeft / ratio;
+					} else {
+						userActivated = true;
+					}
+				};
+				var shiftKeyDown = false;
+				window.onkeydown = function(e) {
+					if (e.keyCode === 39) { //right arrow
+						scroller.scrollLeft += 40;
+					} else if (e.keyCode === 37) { //left arror
+						scroller.scrollLeft -= 40;
+					} else if (e.keyCode === 16) { //shift
+						shiftKeyDown = true;
+					}
+				}
+				window.onkeyup = function(e) {
+					if (e.keyCode === 16) { //shift
+						shiftKeyDown = false;
+					}
+				}
+				
+				window.onmousewheel = function(e) {
+					if (shiftKeyDown) {
+						var clicks = e.detail || (e.wheelDelta / 120);
+						scroller.scrollLeft -= clicks * 100;
+					}
+				}
+				
+				
+				function getRatio() {
+					sourceWidth = source.offsetWidth,
+					scrollerWidth = scroller.offsetWidth,
+					//ratio of the maximum scrollLefts (maxScrollLeftOfSource / maxScrollLeftOfScroller)
+					ratio = (contentWidth - sourceWidth) / (contentWidth - scrollerWidth);
+				}
+				
+				window.onresize = getRatio;
+				getRatio();
+			}
+		</script>
     </head>
-    <body>
+    <body onload="onload()">
         
         <div id="header">
             <div style="float: left;">header left</div>
@@ -162,6 +252,7 @@
             </ul>
         </div>
         <div id="content">
+			<div id="source">
             
             <pre>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras a urna felis. Ut consequat vulputate dictum. Cras porttitor feugiat justo sit amet gravida. Cras tincidunt accumsan elit, vel tincidunt eros tempus sed. Nulla id risus purus. Integer bibendum facilisis sem vitae tincidunt. Vestibulum sodales lectus id dolor euismod eu scelerisque risus malesuada. Donec et orci eget diam interdum dapibus a sit amet sapien. Suspendisse et neque vel ipsum pretium adipiscing sed a libero.</pre>
 
@@ -462,10 +553,10 @@
                     <pre>Integer feugiat libero et libero luctus vulputate. In egestas laoreet tincidunt. Quisque eget massa id turpis laoreet consectetur vel id dui. Aenean ultrices semper ligula id eleifend. Sed in lorem sapien. Aenean nec risus odio. Aenean tempus tempor eros at cursus. Proin laoreet tempus posuere. Donec enim augue, blandit id convallis quis, dapibus et leo. Aliquam erat volutpat. Nulla facilisi. Suspendisse scelerisque rutrum velit tempus fringilla. Quisque pharetra aliquet nunc, feugiat gravida sapien dignissim eget. Maecenas sollicitudin ligula a erat ultrices sed aliquet nunc venenatis.</pre>
 
                     <pre>Morbi consequat elit ut libero blandit euismod. Etiam metus sapien, tincidunt a porttitor ut, laoreet in tortor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum pellentesque, arcu nec interdum ullamcorper, purus tellus lacinia arcu, eu ultrices velit lacus nec mauris. Nulla eget dolor diam, vel ultrices metus. Ut quam enim, gravida ut condimentum at, vulputate vitae lacus. In hac habitasse platea dictumst. Phasellus eget nunc ac lorem congue dictum. In urna urna, varius ultrices tristique in, vehicula euismod justo. Phasellus sollicitudin rutrum molestie. Fusce vel lorem vitae est vestibulum mattis vel sed arcu. Mauris non justo sed arcu placerat blandit.</pre>
-
+				</div>
         </div>
         <div id="footer">footer footer footer footer footer footer footer &copy; 2012</div>
         </div>
         
     </body>
-</html>
+</html>"A challenger approaches..." 
