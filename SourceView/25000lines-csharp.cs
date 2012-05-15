@@ -25635,8 +25635,8 @@ namespace Atlassian.Jira.Test
         {
             var jira = CreateJiraInstance();
             var issues = (from i in jira.Issues
-                           where i["Foo"] == "bar"
-                          select i).ToArray();
+                          where i["Foo"] == "bar"
+							select i).ToArray();
 
             Assert.Equal("\"Foo\" ~ \"bar\"", _translator.Jql);
         }
